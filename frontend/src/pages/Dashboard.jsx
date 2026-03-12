@@ -101,7 +101,7 @@ export default function Dashboard() {
             return 0;
         }
 
-        if (sortField === 'years_of_exp') {
+        if (sortField === 'years_of_exp' || sortField === 'projects_completed') {
             return sortOrder === 'asc' ? valA - valB : valB - valA;
         }
 
