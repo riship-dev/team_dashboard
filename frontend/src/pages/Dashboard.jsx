@@ -204,6 +204,12 @@ export default function Dashboard() {
                                 >
                                     Years of Exp. {sortField === 'years_of_exp' ? (sortOrder === 'asc' ? '↑' : '↓') : '↕'}
                                 </th>
+                                <th
+                                    className="th-sortable"
+                                    onClick={() => handleSort('projects_completed')}
+                                >
+                                    Projects {sortField === 'projects_completed' ? (sortOrder === 'asc' ? '↑' : '↓') : '↕'}
+                                </th>
                                 <th>Functional Areas</th>
                                 <th>Graduation</th>
                                 <th>Chart</th>
@@ -213,7 +219,7 @@ export default function Dashboard() {
                         <tbody>
                             {filtered.length === 0 ? (
                                 <tr>
-                                    <td colSpan="8" className="table-state">
+                                    <td colSpan="9" className="table-state">
                                         {search
                                             ? 'No employees match your search.'
                                             : 'No employees found. Add one!'}
@@ -230,6 +236,7 @@ export default function Dashboard() {
                                         <td>{emp.emp_name}</td>
                                         <td>{emp.designation}</td>
                                         <td>{emp.years_of_exp} yrs</td>
+                                        <td>{emp.projects_completed}</td>
                                         <td>
                                             {emp.areas.map((a) => (
                                                 <span
