@@ -1,11 +1,15 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Navbar.css';
 
 export default function Navbar() {
     const { admin, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Hide navbar on login page
+    if (location.pathname === '/') return null;
 
     const handleLogout = () => {
         logout();
