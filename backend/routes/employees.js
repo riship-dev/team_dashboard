@@ -18,6 +18,7 @@ router.get('/', async (req, res) => {
                 e.designation,
                 e.years_of_exp,
                 e.graduation_deg,
+                e.projects_completed,
                 COALESCE(
                     JSON_AGG(
                         JSON_BUILD_OBJECT(
@@ -57,6 +58,7 @@ router.get('/:emp_id', async (req, res) => {
                 e.designation,
                 e.years_of_exp,
                 e.graduation_deg,
+                e.projects_completed,
                 COALESCE(
                     JSON_AGG(
                         JSON_BUILD_OBJECT(
@@ -91,10 +93,10 @@ router.get('/:emp_id', async (req, res) => {
 // POST /api/employees
 // Body: { emp_id, emp_name, designation, years_of_exp, graduation_deg, areas: [{functional_area_id, rating}] }
 router.post('/', async (req, res) => {
-    const { emp_id, emp_name, designation, years_of_exp, graduation_deg, areas } = req.body;
+    const { emp_id, emp_name, designation, years_of_exp, graduation_deg, projects_completed, areas } = req.body;
 
     // Validate required fields
-    if (!emp_id || !emp_name || !designation || years_of_exp === undefined || !graduation_deg) {
+    if (!emp_id || !emp_name || !designation || years_of_exp === undefined || !graduation_deg || projects_completed === undefined) {
         return res.status(400).json({ error: 'All fields are required.' });
     }
 
@@ -110,9 +112,9 @@ router.post('/', async (req, res) => {
 
         // 1. Insert employee
         await client.query(`
-            INSERT INTO employees (emp_id, emp_name, designation, years_of_exp, graduation_deg)
-            VALUES ($1, $2, $3, $4, $5)
-        `, [emp_id, emp_name, designation, years_of_exp, graduation_deg]);
+            INSERT INTO employees (emp_id, emp_name, designation, years_of_exp, graduation_deg, projects_completed)
+            VALUES ($1, $2, $3, $4, $5, $6)
+        `, [emp_id, emp_name, designation, years_of_exp, graduation_deg, projects_completed]);
 
         // 2. Insert area ratings
         for (const area of areas) {
@@ -152,9 +154,9 @@ router.post('/', async (req, res) => {
 // Body: { emp_name, designation, years_of_exp, graduation_deg, areas: [{functional_area_id, rating}] }
 router.put('/:emp_id', async (req, res) => {
     const { emp_id } = req.params;
-    const { emp_name, designation, years_of_exp, graduation_deg, areas } = req.body;
+    const { emp_name, designation, years_of_exp, graduation_deg, projects_completed, areas } = req.body;
 
-    if (!emp_name || !designation || years_of_exp === undefined || !graduation_deg) {
+    if (!emp_name || !designation || years_of_exp === undefined || !graduation_deg || projects_completed === undefined) {
         return res.status(400).json({ error: 'All fields are required.' });
     }
 
@@ -178,13 +180,14 @@ router.put('/:emp_id', async (req, res) => {
         await client.query(`
             UPDATE employees
             SET
-                emp_name       = $1,
-                designation    = $2,
-                years_of_exp   = $3,
-                graduation_deg = $4,
-                updated_at     = NOW()
-            WHERE emp_id = $5
-        `, [emp_name, designation, years_of_exp, graduation_deg, emp_id]);
+                emp_name             = $1,
+                designation          = $2,
+                years_of_exp         = $3,
+                graduation_deg       = $4,
+                projects_completed   = $5,
+                updated_at           = NOW()
+            WHERE emp_id = $6
+        `, [emp_name, designation, years_of_exp, graduation_deg, projects_completed, emp_id]);
 
         // 3. Replace all area ratings if provided
         if (areas && Array.isArray(areas) && areas.length > 0) {
