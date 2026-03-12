@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
+import EmployeeFormModal from '../components/EmployeeFormModal';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 import './Dashboard.css';
 
 export default function Dashboard() {
-    const { admin } = useAuth();
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
 
-    // ── Fetch all employees ──────────────────────────────────────────────
+    // ── Modal state ──────────────────────────────────────────────────────
+    const [showForm, setShowForm] = useState(false);
+    const [editEmployee, setEditEmployee] = useState(null);
+    const [deleteEmployee, setDeleteEmployee] = useState(null);
+
+    // ── Fetch employees ──────────────────────────────────────────────────
     const fetchEmployees = async () => {
         setLoading(true);
         setError('');
@@ -28,6 +33,30 @@ export default function Dashboard() {
         fetchEmployees();
     }, []);
 
+    // ── Handlers ─────────────────────────────────────────────────────────
+    const handleAddClick = () => {
+        setEditEmployee(null);
+        setShowForm(true);
+    };
+
+    const handleEditClick = (emp) => {
+        setEditEmployee(emp);
+        setShowForm(true);
+    };
+
+    const handleDeleteClick = (emp) => {
+        setDeleteEmployee(emp);
+    };
+
+    const handleFormClose = () => {
+        setShowForm(false);
+        setEditEmployee(null);
+    };
+
+    const handleDeleteClose = () => {
+        setDeleteEmployee(null);
+    };
+
     // ── Search filter ────────────────────────────────────────────────────
     const filtered = employees.filter((emp) => {
         const term = search.toLowerCase();
@@ -42,10 +71,13 @@ export default function Dashboard() {
     // ── Hero stats ───────────────────────────────────────────────────────
     const totalEmployees = employees.length;
     const avgExp = employees.length
-        ? (employees.reduce((sum, e) => sum + Number(e.years_of_exp), 0) / employees.length).toFixed(1)
+        ? (
+            employees.reduce((sum, e) => sum + Number(e.years_of_exp), 0) /
+            employees.length
+          ).toFixed(1)
         : 0;
     const uniqueAreas = [
-        ...new Set(employees.flatMap((e) => e.areas.map((a) => a.area_name)))
+        ...new Set(employees.flatMap((e) => e.areas.map((a) => a.area_name))),
     ].length;
 
     return (
@@ -55,7 +87,6 @@ export default function Dashboard() {
             <div className="hero">
                 <h1>Team Overview</h1>
                 <p>Manage and explore your team members</p>
-
                 <div className="hero-stats">
                     <div className="hero-stat">
                         <div className="hero-stat-number">{totalEmployees}</div>
@@ -83,7 +114,10 @@ export default function Dashboard() {
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
-                <button className="btn btn-primary btn-sm">
+                <button
+                    className="btn btn-primary btn-sm"
+                    onClick={handleAddClick}
+                >
                     + Add Employee
                 </button>
             </div>
@@ -92,7 +126,10 @@ export default function Dashboard() {
             <div className="table-container">
                 {loading && (
                     <div className="table-state">
-                        <div className="spinner-border d-block mx-auto" role="status" />
+                        <div
+                            className="spinner-border d-block mx-auto"
+                            role="status"
+                        />
                         Loading employees...
                     </div>
                 )}
@@ -127,7 +164,9 @@ export default function Dashboard() {
                             {filtered.length === 0 ? (
                                 <tr>
                                     <td colSpan="8" className="table-state">
-                                        {search ? 'No employees match your search.' : 'No employees found. Add one!'}
+                                        {search
+                                            ? 'No employees match your search.'
+                                            : 'No employees found. Add one!'}
                                     </td>
                                 </tr>
                             ) : (
@@ -143,7 +182,10 @@ export default function Dashboard() {
                                         <td>{emp.years_of_exp} yrs</td>
                                         <td>
                                             {emp.areas.map((a) => (
-                                                <span key={a.functional_area_id} className="area-tag">
+                                                <span
+                                                    key={a.functional_area_id}
+                                                    className="area-tag"
+                                                >
                                                     {a.area_name}
                                                 </span>
                                             ))}
@@ -156,10 +198,16 @@ export default function Dashboard() {
                                         </td>
                                         <td>
                                             <div className="action-buttons">
-                                                <button className="btn-edit">
+                                                <button
+                                                    className="btn-edit"
+                                                    onClick={() => handleEditClick(emp)}
+                                                >
                                                     Edit
                                                 </button>
-                                                <button className="btn-delete">
+                                                <button
+                                                    className="btn-delete"
+                                                    onClick={() => handleDeleteClick(emp)}
+                                                >
                                                     Delete
                                                 </button>
                                             </div>
@@ -171,6 +219,23 @@ export default function Dashboard() {
                     </table>
                 )}
             </div>
+
+            {/* ── Modals ──────────────────────────────────────────────── */}
+            {showForm && (
+                <EmployeeFormModal
+                    employee={editEmployee}
+                    onClose={handleFormClose}
+                    onSaved={fetchEmployees}
+                />
+            )}
+
+            {deleteEmployee && (
+                <DeleteConfirmModal
+                    employee={deleteEmployee}
+                    onClose={handleDeleteClose}
+                    onDeleted={fetchEmployees}
+                />
+            )}
 
         </div>
     );
