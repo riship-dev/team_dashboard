@@ -16,6 +16,7 @@ const DEFAULT_FORM = {
     designation: '',
     years_of_exp: '',
     graduation_deg: '',
+    projects_completed: '',
     areas: [],
 };
 
@@ -30,12 +31,13 @@ export default function EmployeeFormModal({ employee, onClose, onSaved }) {
     useEffect(() => {
         if (employee) {
             setForm({
-                emp_id:         employee.emp_id,
-                emp_name:       employee.emp_name,
-                designation:    employee.designation,
-                years_of_exp:   employee.years_of_exp,
-                graduation_deg: employee.graduation_deg,
-                areas:          employee.areas.map((a) => ({
+                emp_id:              employee.emp_id,
+                emp_name:            employee.emp_name,
+                designation:         employee.designation,
+                years_of_exp:        employee.years_of_exp,
+                graduation_deg:      employee.graduation_deg,
+                projects_completed:  employee.projects_completed,
+                areas:               employee.areas.map((a) => ({
                     functional_area_id: a.functional_area_id,
                     rating:             parseFloat(a.rating),
                 })),
@@ -94,11 +96,12 @@ export default function EmployeeFormModal({ employee, onClose, onSaved }) {
 
         try {
             const payload = {
-                emp_name:       form.emp_name,
-                designation:    form.designation,
-                years_of_exp:   parseInt(form.years_of_exp),
-                graduation_deg: form.graduation_deg,
-                areas:          form.areas,
+                emp_name:            form.emp_name,
+                designation:         form.designation,
+                years_of_exp:        parseInt(form.years_of_exp),
+                graduation_deg:      form.graduation_deg,
+                projects_completed:  parseInt(form.projects_completed),
+                areas:               form.areas,
             };
 
             if (isEdit) {
@@ -211,6 +214,20 @@ export default function EmployeeFormModal({ employee, onClose, onSaved }) {
                                 className="form-control"
                                 placeholder="e.g. B.Sc Computer Science"
                                 value={form.graduation_deg}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Projects Completed</label>
+                            <input
+                                type="number"
+                                name="projects_completed"
+                                className="form-control"
+                                placeholder="e.g. 12"
+                                min="0"
+                                value={form.projects_completed}
                                 onChange={handleChange}
                                 required
                             />
