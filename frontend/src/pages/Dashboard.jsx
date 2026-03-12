@@ -101,8 +101,8 @@ export default function Dashboard() {
             return 0;
         }
 
-        if (sortField === 'years_of_exp' || sortField === 'projects_completed') {
-            return sortOrder === 'asc' ? valA - valB : valB - valA;
+        if (sortField === 'years_of_exp' || sortField === 'projects_completed' || sortField === 'emp_id') {
+            return sortOrder === 'asc' ? Number(valA) - Number(valB) : Number(valB) - Number(valA);
         }
 
         return 0;
@@ -190,7 +190,12 @@ export default function Dashboard() {
                     <table className="employee-table">
                         <thead>
                             <tr>
-                                <th>Emp ID</th>
+                                <th
+                                    className="th-sortable"
+                                    onClick={() => handleSort('emp_id')}
+                                >
+                                    Emp ID {sortField === 'emp_id' ? (sortOrder === 'asc' ? '↑' : '↓') : '↕'}
+                                </th>
                                 <th
                                     className="th-sortable"
                                     onClick={() => handleSort('emp_name')}
