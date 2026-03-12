@@ -1,3 +1,4 @@
+import RadarChartModal from '../components/RadarChartModal';
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
 import EmployeeFormModal from '../components/EmployeeFormModal';
@@ -14,6 +15,7 @@ export default function Dashboard() {
     const [showForm, setShowForm] = useState(false);
     const [editEmployee, setEditEmployee] = useState(null);
     const [deleteEmployee, setDeleteEmployee] = useState(null);
+    const [radarEmployee, setRadarEmployee] = useState(null);
 
     // ── Fetch employees ──────────────────────────────────────────────────
     const fetchEmployees = async () => {
@@ -55,6 +57,14 @@ export default function Dashboard() {
 
     const handleDeleteClose = () => {
         setDeleteEmployee(null);
+    };
+
+    const handleRadarClick = (emp) => {
+        setRadarEmployee(emp);
+    };
+
+    const handleRadarClose = () => {
+        setRadarEmployee(null);
     };
 
     // ── Search filter ────────────────────────────────────────────────────
@@ -192,7 +202,10 @@ export default function Dashboard() {
                                         </td>
                                         <td>{emp.graduation_deg}</td>
                                         <td>
-                                            <button className="btn-chart">
+                                            <button
+                                                className="btn-chart"
+                                                onClick={() => handleRadarClick(emp)}
+                                            >
                                                 📊 Radar
                                             </button>
                                         </td>
@@ -237,6 +250,12 @@ export default function Dashboard() {
                 />
             )}
 
+            {radarEmployee && (
+                <RadarChartModal
+                    employee={radarEmployee}
+                    onClose={handleRadarClose}
+                />
+            )}
         </div>
     );
 }
