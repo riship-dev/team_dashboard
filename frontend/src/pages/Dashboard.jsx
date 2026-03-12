@@ -16,6 +16,8 @@ export default function Dashboard() {
     const [editEmployee, setEditEmployee] = useState(null);
     const [deleteEmployee, setDeleteEmployee] = useState(null);
     const [radarEmployee, setRadarEmployee] = useState(null);
+    const [sortField, setSortField] = useState(null);   // 'emp_name' | 'years_of_exp'
+    const [sortOrder, setSortOrder] = useState('asc');  // 'asc' | 'desc'
 
     // ── Fetch employees ──────────────────────────────────────────────────
     const fetchEmployees = async () => {
@@ -66,6 +68,14 @@ export default function Dashboard() {
     const handleRadarClose = () => {
         setRadarEmployee(null);
     };
+    const handleSort = (field) => {
+        if (sortField === field) {
+            setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+        } else {
+            setSortField(field);
+            setSortOrder('asc');
+        }
+    };
 
     // ── Search filter ────────────────────────────────────────────────────
     const filtered = employees.filter((emp) => {
@@ -76,6 +86,26 @@ export default function Dashboard() {
             String(emp.emp_id).includes(term) ||
             emp.areas.some((a) => a.area_name.toLowerCase().includes(term))
         );
+    });
+    const sorted = [...filtered].sort((a, b) => {
+        if (!sortField) return 0;
+
+        let valA = a[sortField];
+        let valB = b[sortField];
+
+        if (sortField === 'emp_name') {
+            valA = valA.toLowerCase();
+            valB = valB.toLowerCase();
+            if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+            if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+            return 0;
+        }
+
+        if (sortField === 'years_of_exp') {
+            return sortOrder === 'asc' ? valA - valB : valB - valA;
+        }
+
+        return 0;
     });
 
     // ── Hero stats ───────────────────────────────────────────────────────
@@ -161,9 +191,19 @@ export default function Dashboard() {
                         <thead>
                             <tr>
                                 <th>Emp ID</th>
-                                <th>Name</th>
+                                <th
+                                    className="th-sortable"
+                                    onClick={() => handleSort('emp_name')}
+                                >
+                                    Name {sortField === 'emp_name' ? (sortOrder === 'asc' ? '↑' : '↓') : '↕'}
+                                </th>
                                 <th>Designation</th>
-                                <th>Years of Exp.</th>
+                                <th
+                                    className="th-sortable"
+                                    onClick={() => handleSort('years_of_exp')}
+                                >
+                                    Years of Exp. {sortField === 'years_of_exp' ? (sortOrder === 'asc' ? '↑' : '↓') : '↕'}
+                                </th>
                                 <th>Functional Areas</th>
                                 <th>Graduation</th>
                                 <th>Chart</th>
@@ -180,7 +220,7 @@ export default function Dashboard() {
                                     </td>
                                 </tr>
                             ) : (
-                                filtered.map((emp) => (
+                                sorted.map((emp) => (
                                     <tr key={emp.emp_id}>
                                         <td>
                                             <span className="emp-id-badge">

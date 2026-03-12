@@ -216,3 +216,12 @@
     height: 2rem;
     margin-bottom: 1rem;
 }
+
+.th-sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.th-sortable:hover {
+    background-color: #2d2d4e;
+}
