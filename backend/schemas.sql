@@ -1,12 +1,13 @@
 -- EMPLOYEES
 CREATE TABLE employees (
-    emp_id          INTEGER PRIMARY KEY,
-    emp_name        VARCHAR(100) NOT NULL,
-    designation     VARCHAR(100) NOT NULL,
-    years_of_exp    INTEGER NOT NULL DEFAULT 0,
-    graduation_deg  VARCHAR(100) NOT NULL,
-    created_at      TIMESTAMP DEFAULT NOW(),
-    updated_at      TIMESTAMP DEFAULT NOW()
+    emp_id              INTEGER PRIMARY KEY,
+    emp_name            VARCHAR(100) NOT NULL,
+    designation         VARCHAR(100) NOT NULL,
+    years_of_exp        INTEGER NOT NULL DEFAULT 0,
+    graduation_deg      VARCHAR(100) NOT NULL,
+    projects_completed  INTEGER NOT NULL DEFAULT 0,
+    created_at          TIMESTAMP DEFAULT NOW(),
+    updated_at          TIMESTAMP DEFAULT NOW()
 );
 
 -- FUNCTIONAL AREAS
@@ -36,4 +37,11 @@ CREATE TABLE admins (
     emp_id      INTEGER PRIMARY KEY REFERENCES employees(emp_id) ON DELETE CASCADE,
     password    VARCHAR(255) NOT NULL,
     created_at  TIMESTAMP DEFAULT NOW()
+);
+
+-- PROJECTS COUNT
+CREATE TABLE team_stats (
+    id                  INTEGER PRIMARY KEY DEFAULT 1,
+    projects_completed  INTEGER NOT NULL DEFAULT 0,
+    CONSTRAINT single_row CHECK (id = 1)
 );
