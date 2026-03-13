@@ -18,6 +18,8 @@ export default function Dashboard() {
     const [radarEmployee, setRadarEmployee] = useState(null);
     const [sortField, setSortField] = useState(null);   // 'emp_name' | 'years_of_exp'
     const [sortOrder, setSortOrder] = useState('asc');  // 'asc' | 'desc'
+    const [teamProjects, setTeamProjects] = useState(0);
+    const [teamProjectsLoading, setTeamProjectsLoading] = useState(false);
 
     // ── Fetch employees ──────────────────────────────────────────────────
     const fetchEmployees = async () => {
@@ -32,9 +34,18 @@ export default function Dashboard() {
             setLoading(false);
         }
     };
+    const fetchTeamStats = async () => {
+        try {
+            const res = await api.get('/team-stats');
+            setTeamProjects(res.data.projects_completed);
+        } catch (err) {
+            console.error('Failed to fetch team stats.');
+        }
+    };
 
     useEffect(() => {
         fetchEmployees();
+        fetchTeamStats();
     }, []);
 
     // ── Handlers ─────────────────────────────────────────────────────────
@@ -68,12 +79,25 @@ export default function Dashboard() {
     const handleRadarClose = () => {
         setRadarEmployee(null);
     };
+    
     const handleSort = (field) => {
         if (sortField === field) {
             setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
         } else {
             setSortField(field);
             setSortOrder('asc');
+        }
+    };
+
+    const handleTeamProjectsChange = async (action) => {
+        setTeamProjectsLoading(true);
+        try {
+            const res = await api.patch('/team-stats/projects-completed', { action });
+            setTeamProjects(res.data.projects_completed);
+        } catch (err) {
+            console.error('Failed to update team projects.');
+        } finally {
+            setTeamProjectsLoading(false);
         }
     };
 
@@ -139,6 +163,26 @@ export default function Dashboard() {
                     <div className="hero-stat">
                         <div className="hero-stat-number">{uniqueAreas}</div>
                         <div className="hero-stat-label">Functional Areas</div>
+                    </div>
+                    <div className="hero-stat">
+                        <div className="hero-stat-clicker">
+                            <button
+                                className="clicker-btn"
+                                onClick={() => handleTeamProjectsChange('decrement')}
+                                disabled={teamProjectsLoading || teamProjects === 0}
+                            >
+                                -
+                            </button>
+                            <div className="hero-stat-number">{teamProjects}</div>
+                            <button
+                                className="clicker-btn"
+                                onClick={() => handleTeamProjectsChange('increment')}
+                                disabled={teamProjectsLoading}
+                            >
+                                +
+                            </button>
+                        </div>
+                        <div className="hero-stat-label">Projects Completed</div>
                     </div>
                 </div>
             </div>
