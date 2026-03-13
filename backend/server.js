@@ -14,6 +14,7 @@ require('./config/db');
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/employees', require('./routes/employees'));
+app.use('/api/team-stats', require('./routes/teamStats'));
 
 // Health check
 app.get('/', (req, res) => {
