@@ -225,3 +225,36 @@
 .th-sortable:hover {
     background-color: #2d2d4e;
 }
+
+/* ── Clicker ────────────────────────────────────────────────────────────── */
+.hero-stat-clicker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.clicker-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clicker-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.28);
+}
+
+.clicker-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
